@@ -1,19 +1,80 @@
 import re
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup as bs
+
+import requests
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
+# extremely slow at getting websites.
 def extract_next_links(url, resp):
-    # Implementation requred.
-    return list()
+    # html_page = "https://www.ics.uci.edu"
 
+    #response = requests.get(url)
+
+    # 204 = Response successful, no content
+
+    if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
+        return list()# these response are bad
+
+    # resp.raw_response.content will give content of HTML webpage     
+    data = resp.raw_response.content 
+
+    # some websites have no raw_response.content.. is that 404 error?
+
+    # list of links to return
+    links = []
+
+    # Beautiful soup will do it's magic and extract data into lmxl 
+    # and then helps us get all the tags from lxml file
+    soup = bs(data, 'lxml') 
+
+    # get anchor tag for all websites
+    tags = soup.find_all('a')
+
+    #need to defragment the page  otherwise we get unnecessary links
+    # like ?= queries and login queries... leads to 403 errors..
+
+    for tag in tags:
+        links.append(tag.get('href'))
+
+    return list(links) 
+
+
+''' 
+    urllib.parse -> parses scheme, netloc, path, params, query, fragment
+    https://docs.python.org/3/library/urllib.parse.html
+
+'''
+
+# is_valid checks if url is good or not. 
+# so it avoids all traps and stuff
 def is_valid(url):
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+
+        # only get links that we can crawl pertaining to assignment.. 
+        if not re.match(r"^(\w*.)(ics.uci.edu|cs.uci.edu|informatics.uci.edu|stat.uci.edu)", parsed.netloc):
+            return False
+
+        #  some websites have PDF in middle of url = becomes a trap
+        # must re.match or something 
+        # Ex of trap in middle of URL: Downloaded http://www.informatics.uci.edu/files/pdf/InformaticsBrochure-March2018
+        if "pdf" in url:
+            return False
+
+        if "#comment" in url:
+            return False
+        
+        if "#respond" in url:
+            return False
+
+
+        # this only checks for urls ending in these extensions
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
