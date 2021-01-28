@@ -28,6 +28,11 @@ def extract_next_links(url, resp):
                 if resp.status != 204:
                     info = requests.get(url)
                     url_content = info.content
+                else:
+                     black_list.append(resp)
+            else:
+                 black_list.append(resp)
+                
 
             # resp.raw_response.content will give content of HTML webpage     
             data = resp.raw_response.content 
