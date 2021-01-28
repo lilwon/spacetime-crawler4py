@@ -1,0 +1,4 @@
+ with open ("unique.txt", "w", encoding = "utf-8") as ques1, \
+         open ("longest_page.txt", "w", encoding = "utf-8") as ques2, \
+         open ("most_common.txt", "w", encoding = "utf-8") as ques3, \
+         open ("subdomains.txt", "w", encoding = "utf-8") as ques4:

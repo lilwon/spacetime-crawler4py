@@ -1,16 +1,20 @@
 import re
+<<<<<<< HEAD
 from urllib.parse import urlparse, urldefrag
+=======
+from urllib.parse import urlparse,urldefrag
+>>>>>>> master
 from bs4 import BeautifulSoup as bs
 
 import requests
 
-def scraper(url, resp):
+def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     links = extract_next_links(url, resp)
-    return [link for link in links if is_valid(link)]
+    return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
-# extremely slow at getting websites.
 def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
+<<<<<<< HEAD
 
     links = []
     # 204 = Response successful, no content
@@ -43,6 +47,49 @@ def extract_next_links(url, resp):
 
     return list(links) 
 
+=======
+    white_list = [] # pages that have already been crawled 
+    black_list = [] # possible duplicate pages/ bad pages we dont want 
+    # list of links to return
+    links = []
+    tokens = [] 
+    #response = requests.get(url)
+
+        # 204 = Response successful, no content
+
+    if not is_valid(url):
+        if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
+            black_list.append(resp) # these response are bad
+        else:
+            if resp.status >= 200 and resp.status <= 400:
+                if resp.status != 204:
+                    data = resp.raw_response.content # resp.raw_response.content will give content of HTML webpage 
+                    soup = bs(data, 'lxml') 
+                # Beautiful soup will do it's magic and extract data into lmxl 
+                # and then helps us get all the tags from lxml file
+                    # some websites have no raw_response.content.. is that 404 error?
+                    for token in soup.get_text.split().strip(): # not complete yet - Matthew 
+                        if token.isalnum():
+                            tokens.append(token) #tokens is a list made earlier. 
+                            
+                    # get anchor tag for all websites
+                       tags = soup.find_all('a')
+                        for tag in tags:
+                            links.append(tag.get('href'))
+                            """
+                            defrag here
+                            -- Make sure to return only URLs that are within the domains and paths mentioned above! 
+                            
+                            """
+                            
+                    
+                    
+                    
+                else:
+                     black_list.append(resp)
+            else:
+                 black_list.append(resp)
+>>>>>>> master
 
 ''' 
     urllib.parse -> parses scheme, netloc, path, params, query, fragment
