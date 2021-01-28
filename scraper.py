@@ -14,6 +14,7 @@ def extract_next_links(url, resp):
     black_list = [] # possible duplicate pages/ bad pages we dont want 
     # list of links to return
     links = []
+    tokens = [] 
     #response = requests.get(url)
     with open ("unique.txt", "w", encoding = "utf-8") as ques1, \
          open ("longest_page.txt", "w", encoding = "utf-8") as ques2, \
@@ -33,6 +34,14 @@ def extract_next_links(url, resp):
                 # Beautiful soup will do it's magic and extract data into lmxl 
                 # and then helps us get all the tags from lxml file
                     # some websites have no raw_response.content.. is that 404 error?
+                    for token in soup.get_text.split().strip():
+                        if token.isalnum():
+                            tokens.append(token) #tokens is a list made earlier. 
+                            
+                    
+                    
+                    
+                    
                 else:
                      black_list.append(resp)
             else:
