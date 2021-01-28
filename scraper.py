@@ -34,11 +34,15 @@ def extract_next_links(url, resp):
                 # Beautiful soup will do it's magic and extract data into lmxl 
                 # and then helps us get all the tags from lxml file
                     # some websites have no raw_response.content.. is that 404 error?
-                    for token in soup.get_text.split().strip():
+                    for token in soup.get_text.split().strip(): # not complete yet - Matthew 
                         if token.isalnum():
                             tokens.append(token) #tokens is a list made earlier. 
                             
-                    
+                    # get anchor tag for all websites
+                       tags = soup.find_all('a')
+                        for tag in tags:
+                            links.append(tag.get('href'))
+                            
                     
                     
                     
@@ -46,18 +50,6 @@ def extract_next_links(url, resp):
                      black_list.append(resp)
             else:
                  black_list.append(resp)
-
-            # get anchor tag for all websites
-            tags = soup.find_all('a')
-
-            #need to defragment the page  otherwise we get unnecessary links
-            # like ?= queries and login queries... leads to 403 errors..
-
-            for tag in tags:
-                links.append(tag.get('href'))
-
-            return list(links), bad_responses
-
 
 ''' 
     urllib.parse -> parses scheme, netloc, path, params, query, fragment
