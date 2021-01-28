@@ -30,12 +30,9 @@ def extract_next_links(url, resp):
     # get anchor tag for all websites
     tags = soup.find_all('a')
 
-    #need to defragment the page  otherwise we get unnecessary links
-    # like ?= queries and login queries... leads to 403 errors..
+    # still get string queries like "?=..." 
     for tag in tags:
-        
         temp = tag.get('href')
-        # need to handle absolute links
         defrag,_ = urldefrag(temp)
 
         links.append(defrag)
