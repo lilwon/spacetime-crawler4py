@@ -23,6 +23,11 @@ def extract_next_links(url, resp):
         if not is_valid(url):
             if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
                 black_list.append(resp) # these response are bad
+            else:
+                if resp.status >= 200 and resp.status <= 400:
+                    if resp.status != 204:
+                        info = requests.get(url)
+                        url_content = info.content
 
             # resp.raw_response.content will give content of HTML webpage     
             data = resp.raw_response.content 
