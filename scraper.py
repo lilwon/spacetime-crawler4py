@@ -11,13 +11,13 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
 # extremely slow at getting websites.
 def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
-
+    bad_responses = [] 
     #response = requests.get(url)
 
     # 204 = Response successful, no content
 
     if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
-        return list()# these response are bad
+        bad_responses.append(resp)# these response are bad
 
     # resp.raw_response.content will give content of HTML webpage     
     data = resp.raw_response.content 
@@ -40,7 +40,7 @@ def extract_next_links(url, resp):
     for tag in tags:
         links.append(tag.get('href'))
 
-    return list(links) 
+    return list(links), bad_responses
 
 
 ''' 
