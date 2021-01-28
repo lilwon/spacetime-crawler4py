@@ -36,9 +36,9 @@ def extract_next_links(url, resp):
         
         temp = tag.get('href')
         # need to handle absolute links
-        defrag_link,_ = urldefrag(temp)
+        defrag,_ = urldefrag(temp)
 
-        links.append(defrag_link)
+        links.append(defrag)
 
     return list(links) 
 
