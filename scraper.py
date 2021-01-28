@@ -4,9 +4,9 @@ from bs4 import BeautifulSoup as bs
 
 import requests
 
-def scraper(url, resp):
+def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     links = extract_next_links(url, resp)
-    return [link for link in links if is_valid(link)]
+    return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
 # extremely slow at getting websites.
 def extract_next_links(url, resp):
