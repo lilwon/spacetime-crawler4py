@@ -18,8 +18,9 @@ def extract_next_links(url, resp):
 
     # 204 = Response successful, no content
 
-    if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
-        black_list.append(resp)# these response are bad
+    if not is_valid(url):
+        if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
+            black_list.append(resp) # these response are bad
 
     # resp.raw_response.content will give content of HTML webpage     
     data = resp.raw_response.content 
