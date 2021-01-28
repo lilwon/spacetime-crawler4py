@@ -42,6 +42,11 @@ def extract_next_links(url, resp):
                        tags = soup.find_all('a')
                         for tag in tags:
                             links.append(tag.get('href'))
+                            """
+                            defrag here
+                            -- Make sure to return only URLs that are within the domains and paths mentioned above! 
+                            
+                            """
                             
                     
                     
