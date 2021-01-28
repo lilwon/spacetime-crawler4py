@@ -16,16 +16,12 @@ def extract_next_links(url, resp):
     links = []
     tokens = [] 
     #response = requests.get(url)
-    with open ("unique.txt", "w", encoding = "utf-8") as ques1, \
-         open ("longest_page.txt", "w", encoding = "utf-8") as ques2, \
-         open ("most_common.txt", "w", encoding = "utf-8") as ques3, \
-         open ("subdomains.txt", "w", encoding = "utf-8") as ques4:
 
         # 204 = Response successful, no content
 
-        if not is_valid(url):
-            if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
-                black_list.append(resp) # these response are bad
+    if not is_valid(url):
+        if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
+            black_list.append(resp) # these response are bad
         else:
             if resp.status >= 200 and resp.status <= 400:
                 if resp.status != 204:
