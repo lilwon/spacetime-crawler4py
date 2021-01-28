@@ -8,9 +8,10 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
-# extremely slow at getting websites.
 def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
+    white_list = [] # pages that have already been crawled 
+    black_list = [] # possible duplicate pages/ bad pages we dont want 
     bad_responses = [] 
     #response = requests.get(url)
 
