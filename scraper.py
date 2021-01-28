@@ -14,6 +14,8 @@ def extract_next_links(url, resp):
     black_list = [] # possible duplicate pages/ bad pages we dont want 
     bad_responses = [] 
     #response = requests.get(url)
+    with open ("unique.txt", "w", encoding = "utf-8") as ques1, open ("longest_page.txt", "w", encoding = "utf-8") as ques2,
+         open ("most_common.txt", "w", encoding = "utf-8") as ques3, open ("subdomains.txt", "w", encoding = "utf-8") as ques4:
 
     # 204 = Response successful, no content
 
