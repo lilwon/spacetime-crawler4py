@@ -26,18 +26,18 @@ def extract_next_links(url, resp):
         else:
             if resp.status >= 200 and resp.status <= 400:
                 if resp.status != 204:
-                    info = requests.get(url)
-                    url_content = info.content
+                    data = resp.raw_response.content # resp.raw_response.content will give content of HTML webpage    
+                    # some websites have no raw_response.content.. is that 404 error?
                 else:
                      black_list.append(resp)
             else:
                  black_list.append(resp)
                 
 
-            # resp.raw_response.content will give content of HTML webpage     
-            data = resp.raw_response.content 
+            
+            
 
-            # some websites have no raw_response.content.. is that 404 error?
+            
 
             # list of links to return
             links = []
