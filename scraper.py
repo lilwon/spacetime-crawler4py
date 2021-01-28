@@ -32,12 +32,6 @@ def extract_next_links(url, resp):
                      black_list.append(resp)
             else:
                  black_list.append(resp)
-                
-
-            
-            
-
-            
 
             # list of links to return
             links = []
