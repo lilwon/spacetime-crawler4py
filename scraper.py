@@ -12,6 +12,8 @@ def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
     white_list = [] # pages that have already been crawled 
     black_list = [] # possible duplicate pages/ bad pages we dont want 
+    # list of links to return
+    links = []
     #response = requests.get(url)
     with open ("unique.txt", "w", encoding = "utf-8") as ques1, \
          open ("longest_page.txt", "w", encoding = "utf-8") as ques2, \
@@ -26,15 +28,15 @@ def extract_next_links(url, resp):
         else:
             if resp.status >= 200 and resp.status <= 400:
                 if resp.status != 204:
-                    data = resp.raw_response.content # resp.raw_response.content will give content of HTML webpage    
+                    data = resp.raw_response.content # resp.raw_response.content will give content of HTML webpage 
+                    soup = bs(data, 'lxml') 
                     # some websites have no raw_response.content.. is that 404 error?
                 else:
                      black_list.append(resp)
             else:
                  black_list.append(resp)
 
-            # list of links to return
-            links = []
+            
 
             # Beautiful soup will do it's magic and extract data into lmxl 
             # and then helps us get all the tags from lxml file
