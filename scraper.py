@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urldefrag
 from bs4 import BeautifulSoup as bs
 
 import requests
@@ -12,33 +12,34 @@ def scraper(url, resp):
 def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
 
-    #response = requests.get(url)
-
+    links = []
     # 204 = Response successful, no content
-
     if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
         return list()# these response are bad
 
     # resp.raw_response.content will give content of HTML webpage     
-    data = resp.raw_response.content 
+    # data = resp.raw_response.content 
 
     # some websites have no raw_response.content.. is that 404 error?
 
     # list of links to return
-    links = []
 
     # Beautiful soup will do it's magic and extract data into lmxl 
     # and then helps us get all the tags from lxml file
-    soup = bs(data, 'lxml') 
+    soup = bs(resp.raw_response.content, 'lxml') 
 
     # get anchor tag for all websites
     tags = soup.find_all('a')
 
     #need to defragment the page  otherwise we get unnecessary links
     # like ?= queries and login queries... leads to 403 errors..
-
     for tag in tags:
-        links.append(tag.get('href'))
+        
+        temp = tag.get('href')
+        # need to handle absolute links
+        defrag_link,_ = urldefrag(temp)
+
+        links.append(defrag_link)
 
     return list(links) 
 
@@ -67,14 +68,29 @@ def is_valid(url):
         if "pdf" in url:
             return False
 
+        # query strings that aren't being detected..
+        if "?action" in url:
+            return False
+
+        # 3 ifs below removes the evoke..comment thread traps -_-
         if "#comment" in url:
             return False
         
         if "#respond" in url:
             return False
 
+        if "?replytocom" in url:
+            return False
+
+        # manually block wics events calendar
+        if re.search(r"(\bevent\b)", parsed.path):
+            return False
+
+        if re.search(r"(\bevents\b)", parsed.path):
+            return False
 
         # this only checks for urls ending in these extensions
+        # added php, ppsx, and odc extensions
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -82,8 +98,8 @@ def is_valid(url):
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
-            + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|thmx|mso|arff|rtf|jar|csv|z|php"
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|ppsx|odc)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
