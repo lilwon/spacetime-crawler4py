@@ -12,7 +12,6 @@ def extract_next_links(url, resp):
     # html_page = "https://www.ics.uci.edu"
     white_list = [] # pages that have already been crawled 
     black_list = [] # possible duplicate pages/ bad pages we dont want 
-    bad_responses = [] 
     #response = requests.get(url)
     with open ("unique.txt", "w", encoding = "utf-8") as ques1, open ("longest_page.txt", "w", encoding = "utf-8") as ques2,
          open ("most_common.txt", "w", encoding = "utf-8") as ques3, open ("subdomains.txt", "w", encoding = "utf-8") as ques4:
@@ -20,7 +19,7 @@ def extract_next_links(url, resp):
     # 204 = Response successful, no content
 
     if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
-        bad_responses.append(resp)# these response are bad
+        black_list.append(resp)# these response are bad
 
     # resp.raw_response.content will give content of HTML webpage     
     data = resp.raw_response.content 
