@@ -13,36 +13,38 @@ def extract_next_links(url, resp):
     white_list = [] # pages that have already been crawled 
     black_list = [] # possible duplicate pages/ bad pages we dont want 
     #response = requests.get(url)
-    with open ("unique.txt", "w", encoding = "utf-8") as ques1, open ("longest_page.txt", "w", encoding = "utf-8") as ques2,
-         open ("most_common.txt", "w", encoding = "utf-8") as ques3, open ("subdomains.txt", "w", encoding = "utf-8") as ques4:
+    with open ("unique.txt", "w", encoding = "utf-8") as ques1, \
+         open ("longest_page.txt", "w", encoding = "utf-8") as ques2, \
+         open ("most_common.txt", "w", encoding = "utf-8") as ques3, \
+         open ("subdomains.txt", "w", encoding = "utf-8") as ques4:
 
-    # 204 = Response successful, no content
+        # 204 = Response successful, no content
 
-    if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
-        black_list.append(resp)# these response are bad
+        if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
+            black_list.append(resp)# these response are bad
 
-    # resp.raw_response.content will give content of HTML webpage     
-    data = resp.raw_response.content 
+        # resp.raw_response.content will give content of HTML webpage     
+        data = resp.raw_response.content 
 
-    # some websites have no raw_response.content.. is that 404 error?
+        # some websites have no raw_response.content.. is that 404 error?
 
-    # list of links to return
-    links = []
+        # list of links to return
+        links = []
 
-    # Beautiful soup will do it's magic and extract data into lmxl 
-    # and then helps us get all the tags from lxml file
-    soup = bs(data, 'lxml') 
+        # Beautiful soup will do it's magic and extract data into lmxl 
+        # and then helps us get all the tags from lxml file
+        soup = bs(data, 'lxml') 
 
-    # get anchor tag for all websites
-    tags = soup.find_all('a')
+        # get anchor tag for all websites
+        tags = soup.find_all('a')
 
-    #need to defragment the page  otherwise we get unnecessary links
-    # like ?= queries and login queries... leads to 403 errors..
+        #need to defragment the page  otherwise we get unnecessary links
+        # like ?= queries and login queries... leads to 403 errors..
 
-    for tag in tags:
-        links.append(tag.get('href'))
+        for tag in tags:
+            links.append(tag.get('href'))
 
-    return list(links), bad_responses
+        return list(links), bad_responses
 
 
 ''' 
