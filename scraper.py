@@ -30,17 +30,13 @@ def extract_next_links(url, resp):
                 if resp.status != 204:
                     data = resp.raw_response.content # resp.raw_response.content will give content of HTML webpage 
                     soup = bs(data, 'lxml') 
+                # Beautiful soup will do it's magic and extract data into lmxl 
+                # and then helps us get all the tags from lxml file
                     # some websites have no raw_response.content.. is that 404 error?
                 else:
                      black_list.append(resp)
             else:
                  black_list.append(resp)
-
-            
-
-            # Beautiful soup will do it's magic and extract data into lmxl 
-            # and then helps us get all the tags from lxml file
-            soup = bs(data, 'lxml') 
 
             # get anchor tag for all websites
             tags = soup.find_all('a')
