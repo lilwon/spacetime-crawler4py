@@ -3,6 +3,7 @@ from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 
 from collections import defaultdict
+import nltk
 
 import requests 
 
@@ -35,15 +36,17 @@ def extract_next_links(url, resp):
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
 
-    for word in soup.get_text.split():
+    tokens = nltk.word_tokenize(soup.get_text())
+
+    for word in tokens:
         if word.isalnum():
-            word_num.append(word)
+            word_num.append(word.lower())
 
 
     word_length[url] = len(word_num)
     with open("longest_page.txt","a") as longest:
         for key,val in word_length.items():
-            longeset.write(key+" --> " + str(val) + " words!")
+            longest.write(key+" --> " + str(val) + " words!")
         current_longest = max(word_length,key = word_length.get)
         longest.write("Longest page in terms of the number of words --> " + current_longest )
 
