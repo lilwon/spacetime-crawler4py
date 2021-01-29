@@ -17,6 +17,7 @@ current_longest = "" # will be updated once we find the longest url
 def extract_next_links(url, resp):
     # links to return  
     links = []
+    word_num = [] # will add words (and reset later) from the url to count 
 
 
     # 204 = Response successful, no content
@@ -29,6 +30,17 @@ def extract_next_links(url, resp):
     # Beautiful soup will do it's magic and extract data into lmxl 
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
+    
+    
+    
+    #need to get length of words inside of each url 
+    for word in soup.get_text.split():
+        if word.isalnum(): # can check for tokenization later
+            word_num.append(word)
+            
+    
+    
+    
     with open("longest_page.txt", "a", encoding="utf-8") as longest:
 
         
