@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as bs
 
 whitelist = set()
 blacklist = set() 
-
+word_length = {} # key --> val 
 import requests
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
@@ -26,6 +26,19 @@ def extract_next_links(url, resp):
     # Beautiful soup will do it's magic and extract data into lmxl 
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
+    with open("longest_page.txt", "a", encoding="utf-8") as longest:
+
+        
+
+
+
+
+
+
+
+
+
+
 
     # get anchor tag for all websites
     # tags = soup.find_all('a')
