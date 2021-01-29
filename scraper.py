@@ -37,23 +37,14 @@ def extract_next_links(url, resp):
     for word in soup.get_text.split():
         if word.isalnum(): # can check for tokenization later
             word_num.append(word)
+    # at this point, the word_num list has all the words from the specific url, we can get the number now and 
+    # establish it in the dictionary 
+    word_length[url] = len(word_num)
+    # use 'a' ---> open for writing, appending to the end of the file if it exists
+    with open("longest_page.txt", "a") as longest:
+        for key,val in word_length:
+            longest.write(key+" --> "+ str(val) + " words!")
             
-    
-    
-    
-    with open("longest_page.txt", "a", encoding="utf-8") as longest:
-
-        
-
-
-
-
-
-
-
-
-
-
 
     # get anchor tag for all websites
     # tags = soup.find_all('a')
@@ -64,6 +55,8 @@ def extract_next_links(url, resp):
         # creates absolute paths 
         links.append(urljoin(url, defrag))
 
+        
+    longest.close()    
     return list(links) 
 
 
