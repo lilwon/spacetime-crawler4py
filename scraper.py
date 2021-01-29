@@ -43,7 +43,7 @@ def extract_next_links(url, resp):
     word_length[url] = len(word_num)
     # use 'a' ---> open for writing, appending to the end of the file if it exists
     with open("longest_page.txt", "a") as longest:
-        for key,val in word_length:
+        for key,val in word_length.items():
             longest.write(key+" --> "+ str(val) + " words!")
         current_longest = max(word_length,key = word_length.get) 
         longest.write("longest page in terms of the number of words --> " + current_longest) 
@@ -55,9 +55,15 @@ def extract_next_links(url, resp):
     #below is to answer question 3 --> getting the top 50 common words 
     
     
-    
+    # most_common = defaultdict(int)
     with open ("most_common.txt", "a") as common:
-        for 
+        for i in word_num:
+            most_common[i] +=1 
+        common_list = sorted(most_common.items(), key = lambda x:x[1]) 
+        final_list = common_list[:51] 
+        for i in final_list:
+            commmon.write("i"+"\n")
+        
     
     # get anchor tag for all websites
     # tags = soup.find_all('a')
