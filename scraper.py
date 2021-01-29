@@ -1,6 +1,9 @@
 import re
-from urllib.parse import urlparse, urldefrag
+from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
+
+whitelist = set()
+blacklist = set() 
 
 import requests
 
@@ -9,42 +12,32 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
     return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
 def extract_next_links(url, resp):
-    # html_page = "https://www.ics.uci.edu"
-
+    # links to return  
     links = []
+
+
     # 204 = Response successful, no content
     if ( resp.status < 200 or resp.status > 400 or resp.status == 204): 
         return list()# these response are bad
 
     # resp.raw_response.content will give content of HTML webpage     
-    # data = resp.raw_response.content 
-
-    # some websites have no raw_response.content.. is that 404 error?
-
-    # list of links to return
+    # some web pages will not have a raw_response
 
     # Beautiful soup will do it's magic and extract data into lmxl 
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
 
     # get anchor tag for all websites
-    tags = soup.find_all('a')
-
+    # tags = soup.find_all('a')
     # still get string queries like "?=..." 
-    for tag in tags:
-        temp = tag.get('href')
+    for anchor_tag in soup.find_all('a'):
+        temp = anchor_tag.get('href') 
         defrag,_ = urldefrag(temp)
-
-        links.append(defrag)
+        # creates absolute paths 
+        links.append(urljoin(url, defrag))
 
     return list(links) 
 
-
-''' 
-    urllib.parse -> parses scheme, netloc, path, params, query, fragment
-    https://docs.python.org/3/library/urllib.parse.html
-
-'''
 
 # is_valid checks if url is good or not. 
 # so it avoids all traps and stuff
@@ -63,30 +56,27 @@ def is_valid(url):
         # Ex of trap in middle of URL: Downloaded http://www.informatics.uci.edu/files/pdf/InformaticsBrochure-March2018
         if "pdf" in url:
             return False
-
-        # query strings that aren't being detected..
+        
+        # query strings that aren't being detected.. from wics pages
         if "?action" in url:
             return False
 
-        # 3 ifs below removes the evoke..comment thread traps -_-
-        if "#comment" in url:
-            return False
-        
-        if "#respond" in url:
+        # blog posts/comments traps
+        if re.match(r"(#comment|#respond|\?replytocom)", parsed.path):
             return False
 
-        if "?replytocom" in url:
+        # ?share= from wics share with google, twitter, etd..
+        if "?share=" in url:
             return False
 
-        # manually block wics events calendar
-        if re.search(r"(\bevent\b)", parsed.path):
-            return False
+        # doku.php from swiki and wp-content = img, event(s) from wics calendar pg 
+        # ....eppstein/pix/ so many.. pictures.. horrible.
+        if re.match(r"(/doku.php/|/wp-content/|/pix/|/events/|/event/)", parsed.path):
+            return False 
 
-        if re.search(r"(\bevents\b)", parsed.path):
-            return False
 
         # this only checks for urls ending in these extensions
-        # added php, ppsx, and odc extensions
+        # added php, ppsx, odc, apk extensions
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -95,7 +85,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv|z|php"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|ppsx|odc)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|ppsx|odc|apk)$", parsed.path.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
