@@ -2,6 +2,8 @@ import re
 from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 
+from collections import defaultdict
+
 import requests 
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
@@ -11,6 +13,11 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
         return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
     return list()
+
+
+word_length = dict()
+current_longest = ""
+most_common = defaultdict(int)
 
 # only focus on resp.status 200-203, 205 & 206
 def extract_next_links(url, resp):
@@ -27,6 +34,26 @@ def extract_next_links(url, resp):
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
 
+    for word in soup.get_text.split():
+        if word.isalnum():
+            word_num.append(word)
+
+
+    word_length[url] = len(word_num)
+    with open("longest_page.txt","a") as longest:
+        for key,val in word-length.items():
+            longeset.write(key+" --> " + str(val) + " words!")
+        current_longest = max(word_length,key = word_length.get)
+        longest.write("Longest page in terms of the number of words --> " + current_longest )
+
+    with open ("most_common.txt", "a") as common:
+        for i in word_num:
+            most_common[i] += 1
+        common_list = sorted(most_common.items(), key=lambda x:x[1])
+        final_list = common_list[:51]
+        for i in final_list:
+            common.write("i"+"\n")
+
     # get anchor tag for all websites
     # tags = soup.find_all('a')
     # still get string queries like "?=..." 
@@ -38,8 +65,7 @@ def extract_next_links(url, resp):
         if is_valid(urljoin(url,defrag)):
             links.append(urljoin(url,defrag))
 
-
-
+    longest.close()
     return list(links) 
 
 
