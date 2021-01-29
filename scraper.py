@@ -44,6 +44,8 @@ def extract_next_links(url, resp):
     with open("longest_page.txt", "a") as longest:
         for key,val in word_length:
             longest.write(key+" --> "+ str(val) + " words!")
+        current_longest = max(word_length,key = word_length.get) 
+        longest.write("longest page in terms of the number of words --> " + current_longest) 
             
 
     # get anchor tag for all websites
@@ -55,7 +57,7 @@ def extract_next_links(url, resp):
         # creates absolute paths 
         links.append(urljoin(url, defrag))
 
-        
+    
     longest.close()    
     return list(links) 
 
