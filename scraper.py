@@ -4,13 +4,16 @@ from bs4 import BeautifulSoup as bs
 
 whitelist = set()
 blacklist = set() 
-word_length = {} # key --> val 
+#don't need default dict, we will not be updating the values of the url, each url will have one set number of words 
 import requests
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
+
+word_length = dict() # key : url , val : # of words
+current_longest = "" # will be updated once we find the longest url 
 def extract_next_links(url, resp):
     # links to return  
     links = []
