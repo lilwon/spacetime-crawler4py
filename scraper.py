@@ -1,7 +1,7 @@
 import re
 from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
-
+from collections import defaultdict # defaultdict(int) for question 3 
 whitelist = set()
 blacklist = set() 
 #don't need default dict, we will not be updating the values of the url, each url will have one set number of words 
@@ -14,6 +14,7 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
 
 word_length = dict() # key : url , val : # of words
 current_longest = "" # will be updated once we find the longest url 
+most_common = defaultdict(int)
 def extract_next_links(url, resp):
     # links to return  
     links = []
@@ -46,8 +47,18 @@ def extract_next_links(url, resp):
             longest.write(key+" --> "+ str(val) + " words!")
         current_longest = max(word_length,key = word_length.get) 
         longest.write("longest page in terms of the number of words --> " + current_longest) 
-            
-
+        
+        
+        
+        
+        
+    #below is to answer question 3 --> getting the top 50 common words 
+    
+    
+    
+    with open ("most_common.txt", "a") as common:
+        for 
+    
     # get anchor tag for all websites
     # tags = soup.find_all('a')
     # still get string queries like "?=..." 
