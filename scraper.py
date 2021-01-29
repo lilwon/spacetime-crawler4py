@@ -23,6 +23,7 @@ most_common = defaultdict(int)
 def extract_next_links(url, resp):
     # links to return  
     links = []
+    word_num = []
 
     # resp.raw_response.content will give content of HTML webpage     
     # some web pages will not have a raw_response
@@ -41,7 +42,7 @@ def extract_next_links(url, resp):
 
     word_length[url] = len(word_num)
     with open("longest_page.txt","a") as longest:
-        for key,val in word-length.items():
+        for key,val in word_length.items():
             longeset.write(key+" --> " + str(val) + " words!")
         current_longest = max(word_length,key = word_length.get)
         longest.write("Longest page in terms of the number of words --> " + current_longest )
