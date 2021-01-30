@@ -2,7 +2,7 @@ import re
 from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 from collections import defaultdict
-from nltk.tokenize import WordPunctTokenizer as tokenize
+from nltk.tokenize import WordPunctTokenizer 
 
 import requests
 import pickle 
@@ -56,10 +56,11 @@ def extract_next_links(url, resp):
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
 
-    tokens = nltk.tokenize(soup.get_text())
+
+    tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
     for word in tokens:
-        if word.isalnum() and not in stop_words and not in contract_ending:
+        if word.isalnum() and word not in stop_words and word not in contract_endings:
             word_num.append(word.lower())
 
 
@@ -79,7 +80,7 @@ def extract_next_links(url, resp):
         common_list = sorted(most_common.items(), key=lambda x:x[1])
         final_list = common_list[:51]
         for i in final_list:
-            common.write(i+"\n")
+            common.write(str(i)+"\n")
 
     # get anchor tag for all websites
     # tags = soup.find_all('a')
@@ -89,8 +90,8 @@ def extract_next_links(url, resp):
         defrag,_ = urldefrag(temp)
         # creates absolute paths 
 
-        new_link = urljoin(url, defrag))
-        if is_valid(new_link):
+        new_link = urljoin(url, defrag)
+        if is_valid(new_link): # would check again when added but it would crawl the page too!
             links.append(new_link)
 
     longest.close()
