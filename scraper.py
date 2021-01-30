@@ -76,7 +76,9 @@ def extract_next_links(url, resp):
     # "w" instead of "a"
     with open ("most_common.txt", "w") as common:
         for i in word_num:
-            most_common[i] += 1
+            if i in most_common:
+                most_common[i] += 1
+
         common_list = sorted(most_common.items(), key=lambda x:x[1])
         final_list = common_list[:51]
         for i in final_list:
