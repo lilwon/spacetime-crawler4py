@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup as bs
 from collections import defaultdict
 from nltk.tokenize import WordPunctTokenizer as tokenize
 
-import requests 
+import requests
+import pickle 
 
 # didn't include haven --> haven't, won --> won't
 stop_words = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 
@@ -58,12 +59,12 @@ def extract_next_links(url, resp):
     tokens = nltk.tokenize(soup.get_text())
 
     for word in tokens:
-        if word.isalnum() and not in stop_words and not in contract_endings:
+        if word.isalnum() and not in stop_words and not in contract_ending:
             word_num.append(word.lower())
 
 
     word_length[url] = len(word_num)
-    with open("longest_page.txt","a") as longest:
+    with open("longest_page.txt","w") as longest:
         '''
         for key,val in word_length.items():
             longest.write(key+" --> " + str(val) + " words!\n")
@@ -71,15 +72,15 @@ def extract_next_links(url, resp):
         current_longest = max(word_length,key = word_length.get)
         longest.write("Longest page in terms of the number of words --> " + current_longest + "\n")
 
-    '''
-    with open ("most_common.txt", "a") as common:
+    # "w" instead of "a"
+    with open ("most_common.txt", "w") as common:
         for i in word_num:
             most_common[i] += 1
         common_list = sorted(most_common.items(), key=lambda x:x[1])
         final_list = common_list[:51]
         for i in final_list:
             common.write(i+"\n")
-    '''
+
     # get anchor tag for all websites
     # tags = soup.find_all('a')
     # still get string queries like "?=..." 
@@ -87,7 +88,10 @@ def extract_next_links(url, resp):
         temp = anchor_tag.get('href') 
         defrag,_ = urldefrag(temp)
         # creates absolute paths 
-        links.append(urljoin(url,defrag))
+
+        new_link = urljoin(url, defrag))
+        if is_valid(new_link):
+            links.append(new_link)
 
     longest.close()
     return list(links) 
