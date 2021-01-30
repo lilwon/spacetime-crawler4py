@@ -56,7 +56,7 @@ def extract_next_links(url, resp):
         common_list = sorted(most_common.items(), key=lambda x:x[1])
         final_list = common_list[:51]
         for i in final_list:
-            common.write("i"+"\n")
+            common.write(i+"\n")
 
     # get anchor tag for all websites
     # tags = soup.find_all('a')
