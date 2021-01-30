@@ -2,13 +2,13 @@ import re
 from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 from collections import defaultdict
-from nltk.tokenize import WordPunctTokenizer 
+from nltk.tokenize import WordPunctTokenizer
 
 import requests
 import pickle 
 
 # didn't include haven --> haven't, won --> won't
-stop_words = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 
+stop_words = set( 'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 
              'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before', 
              'being', 'below', 'between', 'both', 'but', 'by', 'cannot', 'could',
              'could', 'couldn', 'did', 'didn', 'do', 'does', 'doesn', 'doing', 
@@ -24,9 +24,12 @@ stop_words = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', '
              'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up', 
              'very', 'was', 'wasn', 'we', 'were', 'weren', 'what', 'when', 
              'where', 'which', 'while', 'who', 'whom', 'why', 'with', 'would',
-             'wouldn', 'you', 'your', 'yours', 'yourself', 'yourselves' ]
+             'wouldn', 'you', 'your', 'yours', 'yourself', 'yourselves' )
 
-contract_endings = [ 't', 'd', 'll', 've', 's', 'n', 're', 'm']
+# remove single letter words
+contract_endings = set( 't', 'd', 'll', 've', 's', 'n', 're', 'm', 'b', 'c', 'd', 'e',
+                    'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 'u',
+                    'v', 'w', 'x', 'y', 'z')
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
@@ -60,7 +63,8 @@ def extract_next_links(url, resp):
     tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
     for word in tokens:
-        if word.isalnum() and word not in stop_words and word not in contract_endings:
+        #if word.isalnum() and (not word in stop_words) and (not word in contract_endings) and not word.isnumeric():
+        if word.isalnum():
             word_num.append(word.lower())
 
 
@@ -81,7 +85,7 @@ def extract_next_links(url, resp):
             else:
                 most_common[word] += 1
             
-        common_list = sorted(most_common.items(), key=lambda x:x[1])
+        common_list = sorted(most_common.items(), key=lambda x:x[1], reverse=True)
         final_list = common_list[:51]
         for i in final_list:
             common.write(str(i)+"\n")
