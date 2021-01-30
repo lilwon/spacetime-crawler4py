@@ -93,7 +93,7 @@ def is_valid(url):
 
 
         # ?replytocom from evoke website.. we already see the comments in the evoke link 
-        if re.search(r".*(\?replytocom|\?action|?share=).*$", parsed.path):
+        if re.search(r".*(\?replytocom|\?action|\?share=).*$", parsed.path):
             return False
 
         # doku.php from swiki and wp-content = img , event(s) from wics calendar pg 
