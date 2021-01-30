@@ -45,11 +45,14 @@ def extract_next_links(url, resp):
 
     word_length[url] = len(word_num)
     with open("longest_page.txt","a") as longest:
+        '''
         for key,val in word_length.items():
-            longest.write(key+" --> " + str(val) + " words!")
+            longest.write(key+" --> " + str(val) + " words!\n")
+        '''
         current_longest = max(word_length,key = word_length.get)
-        longest.write("Longest page in terms of the number of words --> " + current_longest )
+        longest.write("Longest page in terms of the number of words --> " + current_longest + "\n")
 
+    '''
     with open ("most_common.txt", "a") as common:
         for i in word_num:
             most_common[i] += 1
@@ -57,7 +60,7 @@ def extract_next_links(url, resp):
         final_list = common_list[:51]
         for i in final_list:
             common.write(i+"\n")
-
+    '''
     # get anchor tag for all websites
     # tags = soup.find_all('a')
     # still get string queries like "?=..." 
@@ -65,9 +68,7 @@ def extract_next_links(url, resp):
         temp = anchor_tag.get('href') 
         defrag,_ = urldefrag(temp)
         # creates absolute paths 
-
-        if is_valid(urljoin(url,defrag)):
-            links.append(urljoin(url,defrag))
+        links.append(urljoin(url,defrag))
 
     longest.close()
     return list(links) 
@@ -90,19 +91,10 @@ def is_valid(url):
             if not re.match(r"^(\/department/information_computer_sciences\/).*", parsed.path):
                 return False
 
-        # aren't being detected.. from wics pages
-        if "?action" in url:
-            return False
 
         # ?replytocom from evoke website.. we already see the comments in the evoke link 
-        if re.match(r".*(\?replytocom).*$", parsed.path):
+        if re.search(r".*(\?replytocom|\?action|\?share=).*$", parsed.path):
             return False
-
-        # ?share= from wics share with google, twitter, etd..
-        if "?share=" in url:
-            return False
-
-        # wp-content = evoke website 
 
         # doku.php from swiki and wp-content = img , event(s) from wics calendar pg 
         # ....eppstein/pix/ so many.. pictures.. horrible.
