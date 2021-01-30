@@ -100,7 +100,7 @@ def is_valid(url):
         # doku.php from swiki and wp-content = img , event(s) from wics calendar pg 
         # ....eppstein/pix/ so many.. pictures.. horrible.
         # looks for all events, so hack.uci events arent seen
-        if re.search(r"(/doku.php/|/pix/|/events/|/event/)", parsed.path):
+        if re.search(r"(/doku.php/|/pix/|/events/|/event/|/figs/)", parsed.path):
             return False 
         
         # block any url that contains calendar
