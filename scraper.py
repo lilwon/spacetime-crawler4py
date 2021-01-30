@@ -93,7 +93,8 @@ def is_valid(url):
 
 
         # ?replytocom from evoke website.. we already see the comments in the evoke link 
-        if re.search(r".*(\?replytocom|\?action|\?share=).*$", parsed.path):
+        # parsed.path doesn't detect ?replytocom
+        if re.search(r'(\?action|\?share|\?replytocom)', url):
             return False
 
         # doku.php from swiki and wp-content = img , event(s) from wics calendar pg 
@@ -106,8 +107,8 @@ def is_valid(url):
         if re.match(r"^.*calendar.*$", parsed.path):
             return False
 
+        # websites with these extensions in the middle
         #  some websites have PDF in middle of url = becomes a trap
-        # must re.match or something 
         if re.match(
             r".*(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
