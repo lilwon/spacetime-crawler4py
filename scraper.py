@@ -52,15 +52,18 @@ def extract_next_links(url, resp):
         current_longest = max(word_length,key = word_length.get)
         longest.write("Longest page in terms of the number of words --> " + current_longest + "\n")
 
-    '''
+    
     with open ("most_common.txt", "a") as common:
         for i in word_num:
-            most_common[i] += 1
+            if i not in most_common:
+                most_common[i] = 1 
+            else:
+                most_common[i] += 1
         common_list = sorted(most_common.items(), key=lambda x:x[1])
         final_list = common_list[:51]
         for i in final_list:
             common.write(i+"\n")
-    '''
+    
     # get anchor tag for all websites
     # tags = soup.find_all('a')
     # still get string queries like "?=..." 
