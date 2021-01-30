@@ -1,11 +1,31 @@
 import re
 from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
-
 from collections import defaultdict
-import nltk
+from nltk.tokenize import WordPunctTokenizer as tokenize
 
 import requests 
+
+# didn't include haven --> haven't, won --> won't
+stop_words = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 
+             'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before', 
+             'being', 'below', 'between', 'both', 'but', 'by', 'cannot', 'could',
+             'could', 'couldn', 'did', 'didn', 'do', 'does', 'doesn', 'doing', 
+             'do', 'does', 'doesn', 'doing', 'don', 'down', 'during', 'each',
+             'few', 'for', 'from', 'further', 'had', 'hadn', 'has', 'hasn', 'have',
+             'having', 'he', 'here', 'hers', 'herself', 'him', 'himself', 'his',
+             'how', 'i', 'if', 'in', 'into', 'is', 'isn', 'it', 'its', 'itself',
+             'me', 'more', 'most', 'mustn', 'my', 'myself', 'no', 'nor', 'not',
+             'of', 'off', 'on', 'once', 'or', 'other', 'ought', 'ours', 'our',
+             'only', 'ourselves', 'out', 'over', 'own', 'same', 'she', 'should',
+             'shouldn', 'so', 'some', 'such', 'than', 'that', 'the', 'their',
+             'theirs', 'them', 'themselves', 'then', 'there', 'these', 'they',
+             'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up', 
+             'very', 'was', 'wasn', 'we', 'were', 'weren', 'what', 'when', 
+             'where', 'which', 'while', 'who', 'whom', 'why', 'with', 'would',
+             'wouldn', 'you', 'your', 'yours', 'yourself', 'yourselves' ]
+
+contract_endings = [ 't', 'd', 'll', 've', 's', 'n', 're', 'm']
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
@@ -28,7 +48,6 @@ def extract_next_links(url, resp):
 
     # resp.raw_response.content will give content of HTML webpage     
     # some web pages will not have a raw_response
-
     if resp.raw_response is None:
         return list()
 
@@ -36,10 +55,10 @@ def extract_next_links(url, resp):
     # and then helps us get all the tags from lxml file
     soup = bs(resp.raw_response.content, 'lxml') 
 
-    tokens = nltk.word_tokenize(soup.get_text())
+    tokens = nltk.tokenize(soup.get_text())
 
     for word in tokens:
-        if word.isalnum():
+        if word.isalnum() and not in stop_words and not in contract_endings:
             word_num.append(word.lower())
 
 
