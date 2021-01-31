@@ -1,1 +1,1 @@
-Longest page in terms of the number of words --> https://www.stat.uci.edu/oc_covid_model
+Longest page in terms of the number of words --> http://www.ics.uci.edu/~kay/wordlist.txt

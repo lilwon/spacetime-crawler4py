@@ -63,6 +63,8 @@ def extract_next_links(url, resp):
 
     tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
+    # test_wordfreq(tokens)
+
     for word in tokens:
         word_lower = word.lower()
         if word_lower.isalnum() and (word_lower not in stop_words) and (word_lower not in contract_endings) and not word_lower.isnumeric():
@@ -91,7 +93,7 @@ def extract_next_links(url, resp):
         for i in final_list:
             common.write(str(i)+"\n")
 
-    with open ("freq_subdomains.txt", "w") as parsed_subdomains:
+    with open ("freq_subdomains.txt", "a") as parsed_subdomains:
         parsed_url = urlparse(url)
         if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
             sub = parsed_url.hostname.split('.')[0] 
@@ -101,9 +103,9 @@ def extract_next_links(url, resp):
                 subdomains[sub] += 1
 
             # sort abc order
-            new_subs = sorted(subdomains.items(), key=lambda x:x[0])
+            new_subs = sorted(subdomains.items())
             for i in new_subs:
-                parsed_subdomains.write(i + "\n")
+                parsed_subdomains.write(str(i) + "\n")
 
 
     # get anchor tag for all websites
@@ -181,3 +183,21 @@ def is_valid(url):
         print ("TypeError for ", parsed)
         raise
 
+
+
+def test_wordfreq(url, resp):
+    if resp.raw_response is None:
+        return
+
+    freq = {}
+    soup = bs(resp.raw_response.content, "lxml")
+
+    tokens = WordPunctTokenizer().tokenize(soup.get_text()) 
+
+    for word in tokens:
+        count = word_freq.get(word, 0)
+        word_freq[word] = count + 1
+
+    return freq 
+    
+        
