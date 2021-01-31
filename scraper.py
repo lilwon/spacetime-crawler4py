@@ -43,6 +43,7 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
 word_length = dict()
 current_longest = ""
 most_common = defaultdict(int)
+subdomains = defaultdict(int)
 
 # only focus on resp.status 200-203, 205 & 206
 def extract_next_links(url, resp):
@@ -90,16 +91,28 @@ def extract_next_links(url, resp):
         for i in final_list:
             common.write(str(i)+"\n")
 
+    with open ("freq_subdomains.txt", "w") as parsed_subdomains:
+        parsed_url = urlparse(url)
+        if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
+            sub = parsed_url.hostname.split('.')[0] 
+            if sub not in subdomains:
+                subdomains[sub] = 1
+            else:
+                subdomains[sub] += 1
+
+            # sort abc order
+            new_subs = sorted(subdomains.items(), key=lambda x:x[0])
+            for i in new_subs:
+                parsed_subdomains.write(i + "\n")
+
+
     # get anchor tag for all websites
-    # tags = soup.find_all('a')
-    # still get string queries like "?=..." 
     for anchor_tag in soup.find_all('a'):
         temp = anchor_tag.get('href') 
         defrag,_ = urldefrag(temp)
         # creates absolute paths 
-
         new_link = urljoin(url, defrag)
-        if is_valid(new_link): # would check again when added but it would crawl the page too!
+        if is_valid(new_link): 
             links.append(new_link)
 
     longest.close()
