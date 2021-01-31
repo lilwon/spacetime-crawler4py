@@ -7,29 +7,29 @@ from nltk.tokenize import WordPunctTokenizer
 import requests
 import pickle 
 
-# didn't include haven --> haven't, won --> won't
-stop_words = set( 'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 
-             'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'before', 
-             'being', 'below', 'between', 'both', 'but', 'by', 'cannot', 'could',
-             'could', 'couldn', 'did', 'didn', 'do', 'does', 'doesn', 'doing', 
-             'do', 'does', 'doesn', 'doing', 'don', 'down', 'during', 'each',
-             'few', 'for', 'from', 'further', 'had', 'hadn', 'has', 'hasn', 'have',
-             'having', 'he', 'here', 'hers', 'herself', 'him', 'himself', 'his',
-             'how', 'i', 'if', 'in', 'into', 'is', 'isn', 'it', 'its', 'itself',
-             'me', 'more', 'most', 'mustn', 'my', 'myself', 'no', 'nor', 'not',
-             'of', 'off', 'on', 'once', 'or', 'other', 'ought', 'ours', 'our',
-             'only', 'ourselves', 'out', 'over', 'own', 'same', 'she', 'should',
-             'shouldn', 'so', 'some', 'such', 'than', 'that', 'the', 'their',
-             'theirs', 'them', 'themselves', 'then', 'there', 'these', 'they',
-             'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up', 
-             'very', 'was', 'wasn', 'we', 'were', 'weren', 'what', 'when', 
-             'where', 'which', 'while', 'who', 'whom', 'why', 'with', 'would',
-             'wouldn', 'you', 'your', 'yours', 'yourself', 'yourselves' )
+# didn"t include haven --> haven"t, won --> won"t
+stop_words = ["a", "about", "above", "after", "again", "against", "all", "am", "an", 
+             "and", "any", "are", "as", "at", "be", "because", "been", "before", 
+             "being", "below", "between", "both", "but", "by", "cannot", "could",
+             "could", "couldn", "did", "didn", "do", "does", "doesn", "doing", 
+             "do", "does", "doesn", "doing", "don", "down", "during", "each",
+             "few", "for", "from", "further", "had", "hadn", "has", "hasn", "have",
+             "having", "he", "here", "hers", "herself", "him", "himself", "his",
+             "how", "i", "if", "in", "into", "is", "isn", "it", "its", "itself",
+             "me", "more", "most", "mustn", "my", "myself", "no", "nor", "not",
+             "of", "off", "on", "once", "or", "other", "ought", "ours", "our",
+             "only", "ourselves", "out", "over", "own", "same", "she", "should",
+             "shouldn", "so", "some", "such", "than", "that", "the", "their",
+             "theirs", "them", "themselves", "then", "there", "these", "they",
+             "this", "those", "through", "to", "too", "under", "until", "up", 
+             "very", "was", "wasn", "we", "were", "weren", "what", "when", 
+             "where", "which", "while", "who", "whom", "why", "with", "would",
+             "wouldn", "you", "your", "yours", "yourself", "yourselves", "html"]
 
 # remove single letter words
-contract_endings = set( 't', 'd', 'll', 've', 's', 'n', 're', 'm', 'b', 'c', 'd', 'e',
-                    'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 'u',
-                    'v', 'w', 'x', 'y', 'z')
+contract_endings = [ "t", "d", "ll", "ve", "s", "n", "re", "m", "b", "c", "d", "e",
+                    "f", "g", "h", "j", "k", "l", "m", "n", "o", "p", "q", "r", "u",
+                    "v", "w", "x", "y", "z"]
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
@@ -63,9 +63,9 @@ def extract_next_links(url, resp):
     tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
     for word in tokens:
-        #if word.isalnum() and (not word in stop_words) and (not word in contract_endings) and not word.isnumeric():
-        if word.isalnum():
-            word_num.append(word.lower())
+        word_lower = word.lower()
+        if word_lower.isalnum() and (word_lower not in stop_words) and (word_lower not in contract_endings) and not word_lower.isnumeric():
+            word_num.append(word_lower)
 
 
     word_length[url] = len(word_num)
