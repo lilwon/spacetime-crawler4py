@@ -31,6 +31,12 @@ contract_endings = [ "t", "d", "ll", "ve", "s", "n", "re", "m", "b", "c", "d", "
                     "f", "g", "h", "j", "k", "l", "m", "n", "o", "p", "q", "r", "u",
                     "v", "w", "x", "y", "z"]
 
+word_length = dict()
+current_longest = ""
+most_common = defaultdict(int)
+subdomains = defaultdict(int)
+
+
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
     if resp.status in [200, 201, 202, 203, 205, 206]:
@@ -39,11 +45,6 @@ def scraper(url, resp): # will receive a URL and the response given by the cachi
 
     return list()
 
-
-word_length = dict()
-current_longest = ""
-most_common = defaultdict(int)
-subdomains = defaultdict(int)
 
 # only focus on resp.status 200-203, 205 & 206
 def extract_next_links(url, resp):
@@ -93,9 +94,9 @@ def extract_next_links(url, resp):
         for i in final_list:
             common.write(str(i)+"\n")
 
-    with open ("freq_subdomains.txt", "a") as parsed_subdomains:
-        parsed_url = urlparse(url)
-        if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
+    parsed_url = urlparse(url)
+    if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
+        with open ("freq_subdomains.txt", "w") as parsed_subdomains:
             sub = parsed_url.hostname.split('.')[0] 
             if sub not in subdomains:
                 subdomains[sub] = 1
