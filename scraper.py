@@ -3,9 +3,9 @@ from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 from collections import defaultdict
 from nltk.tokenize import WordPunctTokenizer
+from simhash import Simhash, SimhashIndex
 
 import requests
-import pickle 
 
 # didn"t include haven --> haven"t, won --> won"t
 stop_words = ["a", "about", "above", "after", "again", "against", "all", "am", "an", 
@@ -35,13 +35,16 @@ word_length = dict()
 current_longest = ""
 most_common = defaultdict(int)
 subdomains = defaultdict(int)
-
+hashed_urls = []
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
     if resp.status in [200, 201, 202, 203, 205, 206]:
-        links = extract_next_links(url,resp)
-        return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
+
+        # check the link for near-dupes before extracting em
+        if check_link(resp) ==  True:
+            links = extract_next_links(url,resp)
+            return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
     return list()
 
@@ -186,19 +189,28 @@ def is_valid(url):
 
 
 
-def test_wordfreq(url, resp):
-    if resp.raw_response is None:
-        return
-
-    freq = {}
+def check_link(resp):
+    words_list = [] 
     soup = bs(resp.raw_response.content, "lxml")
-
-    tokens = WordPunctTokenizer().tokenize(soup.get_text()) 
+    tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
     for word in tokens:
-        count = word_freq.get(word, 0)
-        word_freq[word] = count + 1
+        word_lower = word.lower()
+        if ( word_lower.isalnum() and word_lower not in stop_words and not word_lower.isnumeric())):
+            word_list.append(word_lower)
 
-    return freq 
-    
-        
+    # add to hashed urls if nothing in it yet
+    if len(hashed_urls) == 0:
+        hashed_urls.append(Simhash(words_list))
+    else: #items in the list now check hashes
+        temp_hash = Simhash(words_list)
+        for url in hashed_urls:
+            # checks all urls in hsahed_url if less than 5 then return bc bad link
+            if ( Simhash(temp_hash).distance(Simhash(url)) < 5):
+                # near-dup/sim link return 
+                return False
+
+    # return here if everything is all good
+    hashed_url.append(temp_hash)
+    return True
+
