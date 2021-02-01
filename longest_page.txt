@@ -1,1 +1,1 @@
-Longest page in terms of the number of words --> http://www.ics.uci.edu/~kay/wordlist.txt
+Longest page in terms of the number of words --> https://today.uci.edu/department/information_computer_sciences

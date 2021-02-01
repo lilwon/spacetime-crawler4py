@@ -196,14 +196,14 @@ def check_link(resp):
 
     for word in tokens:
         word_lower = word.lower()
-        if ( word_lower.isalnum() and word_lower not in stop_words and not word_lower.isnumeric())):
-            word_list.append(word_lower)
+        if ( word_lower.isalnum() and word_lower not in stop_words and not word_lower.isnumeric()):
+            words_list.append(word_lower)
 
+    temp_hash = Simhash(words_list)
     # add to hashed urls if nothing in it yet
     if len(hashed_urls) == 0:
         hashed_urls.append(Simhash(words_list))
     else: #items in the list now check hashes
-        temp_hash = Simhash(words_list)
         for url in hashed_urls:
             # checks all urls in hsahed_url if less than 5 then return bc bad link
             if ( Simhash(temp_hash).distance(Simhash(url)) < 5):
@@ -211,6 +211,6 @@ def check_link(resp):
                 return False
 
     # return here if everything is all good
-    hashed_url.append(temp_hash)
+    hashed_urls.append(temp_hash)
     return True
 
