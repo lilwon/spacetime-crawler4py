@@ -75,6 +75,7 @@ def extract_next_links(url, resp):
             word_num.append(word_lower)
 
 
+    # Questions #2
     word_length[url] = len(word_num)
     with open("longest_page.txt","w") as longest:
         '''
@@ -82,21 +83,23 @@ def extract_next_links(url, resp):
             longest.write(key+" --> " + str(val) + " words!\n")
         '''
         current_longest = max(word_length,key = word_length.get)
-        longest.write("Longest page in terms of the number of words --> " + current_longest + "\n")
+        longest.write("Longest page in terms of the number of words --> " + current_longest + " --> " + str(word_length[current_longest]) + "\n")
 
+    # Question #3
     # "w" instead of "a"
     with open ("most_common.txt", "w") as common:
         for word in word_num:
-            if word not in most_common:
-                most_common[word] = 1
-            else:
+            if word in most_common:
                 most_common[word] += 1
+            else:
+                most_common[word] = 1
             
         common_list = sorted(most_common.items(), key=lambda x:x[1], reverse=True)
         final_list = common_list[:51]
         for i in final_list:
             common.write(str(i)+"\n")
 
+    # Question #4
     parsed_url = urlparse(url)
     if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
         with open ("freq_subdomains.txt", "w") as parsed_subdomains:
