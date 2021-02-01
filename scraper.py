@@ -3,9 +3,9 @@ from urllib.parse import urlparse, urldefrag, urljoin
 from bs4 import BeautifulSoup as bs
 from collections import defaultdict
 from nltk.tokenize import WordPunctTokenizer
+from simhash import Simhash, SimhashIndex
 
 import requests
-import pickle 
 
 # didn"t include haven --> haven"t, won --> won"t
 stop_words = ["a", "about", "above", "after", "again", "against", "all", "am", "an", 
@@ -35,13 +35,16 @@ word_length = dict()
 current_longest = ""
 most_common = defaultdict(int)
 subdomains = defaultdict(int)
-
+hashed_urls = []
 
 def scraper(url, resp): # will receive a URL and the response given by the caching server for the requested URL (the webpage) 
     # links = extract_next_links(url, resp)
     if resp.status in [200, 201, 202, 203, 205, 206]:
-        links = extract_next_links(url,resp)
-        return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
+
+        # check the link for near-dupes before extracting em
+        if check_link(resp) ==  True:
+            links = extract_next_links(url,resp)
+            return [link for link in links if is_valid(link)] # scrapped list of URLs from the page 
 
     return list()
 
@@ -71,27 +74,29 @@ def extract_next_links(url, resp):
         if word_lower.isalnum() and (word_lower not in stop_words) and (word_lower not in contract_endings) and not word_lower.isnumeric():
             word_num.append(word_lower)
 
-    # Question #2
+
     word_length[url] = len(word_num)
     with open("longest_page.txt","w") as longest:
+        '''
+        for key,val in word_length.items():
+            longest.write(key+" --> " + str(val) + " words!\n")
+        '''
         current_longest = max(word_length,key = word_length.get)
-        longest.write("Longest page in terms of the number of words --> " + current_longest + " --> "+ str(word_length[current_longest]) + "\n")
+        longest.write("Longest page in terms of the number of words --> " + current_longest + "\n")
 
-    # Question #3
     # "w" instead of "a"
     with open ("most_common.txt", "w") as common:
         for word in word_num:
-            if word in most_common:
-                most_common[word] += 1
-            else:
+            if word not in most_common:
                 most_common[word] = 1
+            else:
+                most_common[word] += 1
             
         common_list = sorted(most_common.items(), key=lambda x:x[1], reverse=True)
         final_list = common_list[:51]
         for i in final_list:
             common.write(str(i)+"\n")
 
-    # Question #4
     parsed_url = urlparse(url)
     if re.match(r"(^\w*.)(ics.uci.edu)", parsed_url.netloc):
         with open ("freq_subdomains.txt", "w") as parsed_subdomains:
@@ -100,6 +105,7 @@ def extract_next_links(url, resp):
                 subdomains[sub] = 1
             else:
                 subdomains[sub] += 1
+
             # sort abc order
             new_subs = sorted(subdomains.items())
             for i in new_subs:
@@ -115,11 +121,7 @@ def extract_next_links(url, resp):
         if is_valid(new_link): 
             links.append(new_link)
 
-            
-
     longest.close()
-    common.close()
-    parsed_subdomains.close()
     return list(links) 
 
 
@@ -187,19 +189,27 @@ def is_valid(url):
 
 
 
-def test_wordfreq(url, resp):
-    if resp.raw_response is None:
-        return
-
-    freq = {}
+def check_link(resp):
+    words_list = [] 
     soup = bs(resp.raw_response.content, "lxml")
-
-    tokens = WordPunctTokenizer().tokenize(soup.get_text()) 
+    tokens = WordPunctTokenizer().tokenize(soup.get_text())
 
     for word in tokens:
-        count = word_freq.get(word, 0)
-        word_freq[word] = count + 1
+        word_lower = word.lower()
+        if ( word_lower.isalnum() and word_lower not in stop_words and not word_lower.isnumeric()):
+            words_list.append(word_lower)
 
-    return freq 
-    
-        
+    temp_hash = Simhash(words_list)
+    # add to hashed urls if nothing in it yet
+    if len(hashed_urls) == 0:
+        hashed_urls.append(Simhash(words_list))
+    else: #items in the list now check hashes
+        for url in hashed_urls:
+            # checks all urls in hsahed_url if less than 5 then return bc bad link
+            if ( Simhash(temp_hash).distance(Simhash(url)) < 5):
+                # near-dup/sim link return 
+                return False
+
+    # return here if everything is all good
+    hashed_urls.append(temp_hash)
+    return True
